@@ -34,14 +34,19 @@ class ZAlgorithm:
                 Z[k] = right - left
                 right -= 1
             else:
+                beta = right - k + 1  # Remaining length of the Z-box
                 # If k is inside the current Z-box, we use the values computed before
                 k1 = k - left
-                if Z[k1] < right - k + 1:
+                if Z[k1] < beta:
                     # If Z[k1] is less than the remaining length, we copy the value
                     Z[k] = Z[k1]
+                elif Z[k1] > beta:
+                    # If Z[k1] is greater than the remaining length, we set Z[k] to the remaining length
+                    Z[k] = beta
                 else:
                     # Otherwise, reset the Z-box and do naive comparison
                     left = k
+                    right += 1
                     while right < len(input_string) and input_string[right] == input_string[right - left]:
                         self.no_of_comparisons += 1
                         right += 1                       
@@ -51,6 +56,7 @@ class ZAlgorithm:
                         self.no_of_mismatches += 1  # When Character mismatched
                     Z[k] = right - left
                     right -= 1
+
         # Return the Z array
         return Z
 
@@ -66,12 +72,12 @@ class ZAlgorithm:
                 result.append(i - len(pattern) - 1)
 
         return result
-    
+
     def print_results(self):
-        # Print the number of comparisons, matches, and mismatches
-        print("Number of comparisons: ", self.no_of_comparisons)
-        print("Number of matches: ", self.no_of_matches)
-        print("Number of mismatches: ", self.no_of_mismatches)
+        print(f"Number of comparisons: {self.no_of_comparisons}")
+        print(f"Number of matches: {self.no_of_matches}")
+        print(f"Number of mismatches: {self.no_of_mismatches}")
+    
 
 def read_from_files(input_file, output_file):    
     # Check if the input file exists
@@ -88,15 +94,17 @@ def read_from_files(input_file, output_file):
             # Output results to new file in the given output directory
             with open(output_file, 'w') as output:
                 for index in result:
-                    output.write(f"{index + 1}\n")  #As we have 1-based index
+                    output.write(f"{index + 1}\n")  #As we have 1-based index            
+                output.write(f"Number of comparisons: {z_algorithm.no_of_comparisons}\n")
+                output.write(f"Number of matches: {z_algorithm.no_of_matches}\n")
+                output.write(f"Number of mismatches: {z_algorithm.no_of_mismatches}\n")
             print(f"Results written to {output_file}")
             z_algorithm.print_results()
 
-
 def main():
     # Check if the input directory is provided    
-    input_directory = sys.argv[1]  # Command line argument
-    output_directory = input_directory + "/solutions"  # Output directory
+    input_directory = sys.argv[1]  
+    output_directory = input_directory + "/solutions"
     
     # Create the output directory if it does not exist
     if not os.path.exists(output_directory):
@@ -105,6 +113,7 @@ def main():
     # Process each file in the input directory
     for input_file in os.listdir(input_directory):
         if input_file.startswith("sample_"):
+            print(f"Processing {input_file}")
             input_path = os.path.join(input_directory, input_file)
             output_file = f"sol_{input_file.split('_')[1]}"
             output_path = os.path.join(output_directory, output_file)
