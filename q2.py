@@ -109,7 +109,7 @@ def main():
         print(f"Processing {input_file}")
         basename = os.path.basename(input_file)
         test_num = basename.split('_')[1].split('.')[0]
-        output_file = f"sol_q2_t{test_num}"
+        output_file = f"sol_q2_t{test_num}.txt"
         output_path = os.path.join(output_directory, output_file)
         motif_length, num_motifs, num_iters, dna = parse_input_file(input_file)
         best_score_overall = float('inf')
